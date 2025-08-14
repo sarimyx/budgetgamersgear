@@ -4,12 +4,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Star, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Star,
+  CheckCircle,
+  XCircle,
   ExternalLink,
-  ArrowRight,
   Headphones,
   Keyboard,
   Mouse,
@@ -200,7 +199,7 @@ export default function ReviewsPage() {
   const [sortBy, setSortBy] = useState("rating");
 
   const filteredReviews = brandReviews.filter(review => {
-    const hasCategoryProducts = review.topProducts.some(product => 
+    const hasCategoryProducts = review.topProducts.some(product =>
       selectedCategory === "all" || product.category === selectedCategory
     );
     return hasCategoryProducts;
@@ -219,7 +218,7 @@ export default function ReviewsPage() {
     }
   });
 
-  const handleAmazonClick = (product: any) => {
+  const handleAmazonClick = (product: { name: string; amazonLink: string }) => {
     console.log(`Affiliate click: ${product.name}`);
     window.open(product.amazonLink, '_blank');
   };
@@ -228,13 +227,12 @@ export default function ReviewsPage() {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
-        className={`h-4 w-4 ${
-          i < Math.floor(rating)
+        className={`h-4 w-4 ${i < Math.floor(rating)
             ? "text-yellow-400 fill-current"
             : i < rating
-            ? "text-yellow-400 fill-current opacity-50"
-            : "text-gray-400"
-        }`}
+              ? "text-yellow-400 fill-current opacity-50"
+              : "text-gray-400"
+          }`}
       />
     ));
   };

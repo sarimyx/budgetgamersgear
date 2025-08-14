@@ -2,22 +2,21 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ShoppingCart, 
-  CreditCard, 
-  Lock, 
-  Truck, 
-  Shield, 
+import {
+  ShoppingCart,
+  CreditCard,
+  Lock,
+  Truck,
+  Shield,
   ExternalLink,
   Trash2,
   Plus,
   Minus,
   ArrowLeft,
   CheckCircle,
-  AlertCircle
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -344,11 +343,10 @@ export default function CheckoutPage() {
                     {shippingOptions.map((option) => (
                       <div
                         key={option.id}
-                        className={`p-4 rounded-lg border cursor-pointer transition-colors ${
-                          selectedShipping === option.id
-                            ? "border-primary bg-primary/10"
-                            : "border-white/10 bg-white/5 hover:bg-white/10"
-                        }`}
+                        className={`p-4 rounded-lg border cursor-pointer transition-colors ${selectedShipping === option.id
+                          ? "border-primary bg-primary/10"
+                          : "border-white/10 bg-white/5 hover:bg-white/10"
+                          }`}
                         onClick={() => setSelectedShipping(option.id)}
                       >
                         <div className="flex items-center justify-between">
@@ -425,14 +423,14 @@ export default function CheckoutPage() {
 
                     {/* Checkout Options */}
                     <div className="space-y-3">
-                      <Button 
+                      <Button
                         onClick={handleAmazonCheckout}
                         className="w-full bg-orange-600 hover:bg-orange-700"
                       >
                         <ExternalLink className="mr-2 h-4 w-4" />
                         Checkout with Amazon
                       </Button>
-                      
+
                       <div className="relative">
                         <div className="absolute inset-0 flex items-center">
                           <span className="w-full border-t border-white/20" />
@@ -442,7 +440,7 @@ export default function CheckoutPage() {
                         </div>
                       </div>
 
-                      <Button 
+                      <Button
                         onClick={handleSecureCheckout}
                         className="w-full"
                       >

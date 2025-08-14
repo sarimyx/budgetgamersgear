@@ -5,13 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Mail, 
-  Phone, 
-  MessageSquare, 
-  Clock, 
-  MapPin, 
+import {
+  Mail,
+  Phone,
+  MessageSquare,
+  Clock,
   HelpCircle,
   ChevronDown,
   ChevronUp,
@@ -192,7 +190,7 @@ export default function ContactPage() {
                   Send us a Message
                 </CardTitle>
                 <CardDescription>
-                  Fill out the form below and we'll get back to you as soon as possible.
+                  Fill out the form below and we&apos;ll get back to you as soon as possible.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -366,7 +364,7 @@ export default function ContactPage() {
           <div className="space-y-4">
             {faqData.map((faq, index) => (
               <Card key={index} className="bg-black/20 backdrop-blur-sm border-white/10">
-                <CardHeader 
+                <CardHeader
                   className="cursor-pointer hover:bg-white/5 transition-colors"
                   onClick={() => handleFAQToggle(index)}
                 >

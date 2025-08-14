@@ -140,7 +140,7 @@ export default function Home() {
               <CardHeader className="relative z-10">
                 <div className="flex items-center justify-between">
                   <CardTitle>Top Pick 2</CardTitle>
-                  <Badge variant="secondary" className="animate-pulse delay-500">Editor's Choice</Badge>
+                  <Badge variant="secondary" className="animate-pulse delay-500">Editor&apos;s Choice</Badge>
                 </div>
                 <CardDescription>Short description of Top Pick 2.</CardDescription>
               </CardHeader>

@@ -1,4 +1,4 @@
-import { Headphones, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
+import { Headphones, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -45,7 +45,7 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-muted-foreground text-sm mb-4">
-              Honest reviews and recommendations for affordable gaming gear. 
+              Honest reviews and recommendations for affordable gaming gear.
               No paid hype, just real opinions from gamers like you.
             </p>
             <div className="flex space-x-4">
