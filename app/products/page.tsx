@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,12 @@ import {
   Mouse,
   Monitor,
   Gamepad,
-  Speaker
+  Speaker,
+  ChevronDown,
+  TrendingUp,
+  DollarSign,
+  Star as StarIcon,
+  MessageSquare
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -113,10 +118,44 @@ const categories = [
   { id: "audio", name: "Audio", icon: Speaker }
 ];
 
+const sortOptions = [
+  { value: "featured", label: "Featured", icon: TrendingUp },
+  { value: "price-low", label: "Price: Low to High", icon: DollarSign },
+  { value: "price-high", label: "Price: High to Low", icon: DollarSign },
+  { value: "rating", label: "Highest Rated", icon: StarIcon },
+  { value: "reviews", label: "Most Reviews", icon: MessageSquare }
+];
+
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("featured");
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsSortDropdownOpen(false);
+      }
+    };
+
+    // Close dropdown when pressing Escape key
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsSortDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscapeKey);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, []);
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -146,6 +185,8 @@ export default function ProductsPage() {
     window.open(product.amazonLink, '_blank');
   };
 
+  const selectedSortOption = sortOptions.find(option => option.value === sortBy);
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background Effects */}
@@ -170,7 +211,7 @@ export default function ProductsPage() {
           </div>
 
           {/* Search and Filter Bar */}
-          <div className="bg-black/20 backdrop-blur-sm rounded-lg p-6 mb-8 border border-white/10">
+          <div className="bg-black/20 backdrop-blur-sm rounded-lg p-6 mb-8 border border-white/10 relative z-10">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}
               <div className="flex-1 relative">
@@ -202,18 +243,74 @@ export default function ProductsPage() {
                 })}
               </div>
 
-              {/* Sort */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-white/5 border border-white/20 h-fit rounded-md px-3 py-2 text-white"
-              >
-                <option value="featured">Featured</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
-                <option value="reviews">Most Reviews</option>
-              </select>
+              {/* Sort Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setIsSortDropdownOpen(!isSortDropdownOpen);
+                    }
+                  }}
+                  aria-haspopup="listbox"
+                  aria-expanded={isSortDropdownOpen}
+                  className="bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-white/30 min-w-[200px] justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    {selectedSortOption && (
+                      <>
+                        <selectedSortOption.icon className="h-4 w-4" />
+                        <span className="hidden sm:inline">{selectedSortOption.label}</span>
+                        <span className="sm:hidden">{selectedSortOption.label.split(':')[0]}</span>
+                      </>
+                    )}
+                  </div>
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isSortDropdownOpen ? 'rotate-180' : ''}`} />
+                </Button>
+
+                {isSortDropdownOpen && (
+                  <div 
+                    className="absolute top-full left-0 right-0 mt-1 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-xl z-[9999]"
+                    role="listbox"
+                    aria-label="Sort options"
+                  >
+                    {sortOptions.map((option) => {
+                      const Icon = option.icon;
+                      return (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            setSortBy(option.value);
+                            setIsSortDropdownOpen(false);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              setSortBy(option.value);
+                              setIsSortDropdownOpen(false);
+                            }
+                          }}
+                          role="option"
+                          aria-selected={sortBy === option.value}
+                          className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-black ${
+                            sortBy === option.value 
+                              ? 'bg-primary/20 text-primary border-l-2 border-primary' 
+                              : 'text-white'
+                          }`}
+                        >
+                          <Icon className={`h-4 w-4 ${sortBy === option.value ? 'text-primary' : 'text-muted-foreground'}`} />
+                          <span className="text-sm">{option.label}</span>
+                          {sortBy === option.value && (
+                            <div className="ml-auto w-2 h-2 bg-primary rounded-full"></div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

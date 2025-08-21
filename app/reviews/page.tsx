@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +17,11 @@ import {
   Speaker,
   Award,
   Users,
-  Clock
+  Clock,
+  ChevronDown,
+  Star as StarIcon,
+  MessageSquare,
+  SortAsc
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -194,9 +198,41 @@ const categories = [
   { id: "audio", name: "Audio", icon: Speaker }
 ];
 
+const sortOptions = [
+  { value: "rating", label: "Highest Rated", icon: StarIcon },
+  { value: "reviews", label: "Most Reviews", icon: MessageSquare },
+  { value: "name", label: "Alphabetical", icon: SortAsc }
+];
+
 export default function ReviewsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("rating");
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsSortDropdownOpen(false);
+      }
+    };
+
+    // Close dropdown when pressing Escape key
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsSortDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscapeKey);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, []);
 
   const filteredReviews = brandReviews.filter(review => {
     const hasCategoryProducts = review.topProducts.some(product =>
@@ -237,6 +273,8 @@ export default function ReviewsPage() {
     ));
   };
 
+  const selectedSortOption = sortOptions.find(option => option.value === sortBy);
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background Effects */}
@@ -261,9 +299,9 @@ export default function ReviewsPage() {
           </div>
 
           {/* Filter Bar */}
-          <div className="bg-black/20 backdrop-blur-sm rounded-lg p-6 mb-8 border border-white/10">
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
-              <div className="flex flex-wrap gap-2">
+          <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 sm:p-6 mb-8 border border-white/10 relative z-10">
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+              <div className="flex flex-wrap gap-2 w-full">
                 {categories.map((category) => {
                   const Icon = category.icon;
                   return (
@@ -272,43 +310,103 @@ export default function ReviewsPage() {
                       variant={selectedCategory === category.id ? "default" : "outline"}
                       size="sm"
                       onClick={() => setSelectedCategory(category.id)}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 flex-shrink-0"
                     >
                       <Icon className="h-4 w-4" />
-                      {category.name}
+                      <span className="hidden sm:inline">{category.name}</span>
+                      <span className="sm:hidden">{category.name.split(' ')[0]}</span>
                     </Button>
                   );
                 })}
               </div>
 
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-white/5 border border-white/20 rounded-md px-3 py-2 text-white"
-              >
-                <option value="rating">Highest Rated</option>
-                <option value="reviews">Most Reviews</option>
-                <option value="name">Alphabetical</option>
-              </select>
+              {/* Sort Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setIsSortDropdownOpen(!isSortDropdownOpen);
+                    }
+                  }}
+                  aria-haspopup="listbox"
+                  aria-expanded={isSortDropdownOpen}
+                  className="bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-white/30 min-w-[200px] justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    {selectedSortOption && (
+                      <>
+                        <selectedSortOption.icon className="h-4 w-4" />
+                        <span className="hidden sm:inline">{selectedSortOption.label}</span>
+                        <span className="sm:hidden">{selectedSortOption.label.split(':')[0]}</span>
+                      </>
+                    )}
+                  </div>
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isSortDropdownOpen ? 'rotate-180' : ''}`} />
+                </Button>
+
+                {isSortDropdownOpen && (
+                  <div 
+                    className="absolute top-full left-0 right-0 mt-1 bg-black/90 backdrop-blur-sm border border-white/20 rounded-lg shadow-xl z-[9999]"
+                    role="listbox"
+                    aria-label="Sort options"
+                  >
+                    {sortOptions.map((option) => {
+                      const Icon = option.icon;
+                      return (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            setSortBy(option.value);
+                            setIsSortDropdownOpen(false);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              setSortBy(option.value);
+                              setIsSortDropdownOpen(false);
+                            }
+                          }}
+                          role="option"
+                          aria-selected={sortBy === option.value}
+                          className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-black ${
+                            sortBy === option.value 
+                              ? 'bg-primary/20 text-primary border-l-2 border-primary' 
+                              : 'text-white'
+                          }`}
+                        >
+                          <Icon className={`h-4 w-4 ${sortBy === option.value ? 'text-primary' : 'text-muted-foreground'}`} />
+                          <span className="text-sm">{option.label}</span>
+                          {sortBy === option.value && (
+                            <div className="ml-auto w-2 h-2 bg-primary rounded-full"></div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Brand Reviews Grid */}
           <div className="space-y-8">
             {sortedReviews.map((review) => (
-              <Card key={review.id} className="bg-black/20 backdrop-blur-sm border-white/10 hover:shadow-lg transition-all duration-300">
-                <CardHeader>
+              <Card key={review.id} className="bg-black/20 backdrop-blur-sm border-white/10 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <CardHeader className="p-4 sm:p-6">
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-lg flex items-center justify-center">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 min-w-0">
+                      <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
                         <Award className="h-8 w-8 text-primary" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <CardTitle className="text-2xl">{review.name}</CardTitle>
-                          <Badge variant="secondary">{review.badge}</Badge>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                          <CardTitle className="text-xl sm:text-2xl break-words">{review.name}</CardTitle>
+                          <Badge variant="secondary" className="w-fit">{review.badge}</Badge>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             {renderStars(review.overallRating)}
                             <span>{review.overallRating}/5</span>
@@ -324,45 +422,45 @@ export default function ReviewsPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex-shrink-0">
                       <p className="text-sm text-muted-foreground">{review.category}</p>
                     </div>
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-6">
-                  <CardDescription className="text-base">
+                <CardContent className="p-4 sm:p-6 space-y-6">
+                  <CardDescription className="text-base break-words">
                     {review.description}
                   </CardDescription>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     {/* Pros */}
-                    <div>
+                    <div className="min-w-0">
                       <h4 className="font-semibold mb-3 text-green-400 flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" />
+                        <CheckCircle className="h-4 w-4 flex-shrink-0" />
                         Pros
                       </h4>
                       <ul className="space-y-2">
                         {review.pros.map((pro, index) => (
                           <li key={index} className="flex items-start gap-2 text-sm">
                             <CheckCircle className="h-3 w-3 text-green-400 mt-0.5 flex-shrink-0" />
-                            <span>{pro}</span>
+                            <span className="break-words">{pro}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
 
                     {/* Cons */}
-                    <div>
+                    <div className="min-w-0">
                       <h4 className="font-semibold mb-3 text-red-400 flex items-center gap-2">
-                        <XCircle className="h-4 w-4" />
+                        <XCircle className="h-4 w-4 flex-shrink-0" />
                         Cons
                       </h4>
                       <ul className="space-y-2">
                         {review.cons.map((con, index) => (
                           <li key={index} className="flex items-start gap-2 text-sm">
                             <XCircle className="h-3 w-3 text-red-400 mt-0.5 flex-shrink-0" />
-                            <span>{con}</span>
+                            <span className="break-words">{con}</span>
                           </li>
                         ))}
                       </ul>
@@ -370,23 +468,23 @@ export default function ReviewsPage() {
                   </div>
 
                   {/* Top Products */}
-                  <div>
+                  <div className="min-w-0">
                     <h4 className="font-semibold mb-4 text-primary">Top Products</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {review.topProducts.map((product, index) => (
-                        <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                          <div className="flex items-center justify-between mb-2">
-                            <h5 className="font-medium">{product.name}</h5>
-                            <div className="flex items-center gap-1">
+                        <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                            <h5 className="font-medium break-words">{product.name}</h5>
+                            <div className="flex items-center gap-1 flex-shrink-0">
                               {renderStars(product.rating)}
                             </div>
                           </div>
-                          <div className="flex items-center justify-between">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                             <span className="text-lg font-bold text-primary">${product.price}</span>
                             <Button
                               size="sm"
                               onClick={() => handleAmazonClick(product)}
-                              className="flex items-center gap-2"
+                              className="flex items-center gap-2 w-full sm:w-auto"
                             >
                               <ExternalLink className="h-3 w-3" />
                               View on Amazon

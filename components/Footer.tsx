@@ -1,3 +1,4 @@
+import { Identity } from "@/config/identity";
 import { Headphones, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
 
 const Footer = () => {
@@ -41,7 +42,7 @@ const Footer = () => {
             <div className="flex items-center space-x-2 mb-4">
               <Headphones className="h-8 w-8 text-primary" />
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-                Budget Gamers Gear
+                {Identity.name}
               </span>
             </div>
             <p className="text-muted-foreground text-sm mb-4">
@@ -120,7 +121,7 @@ const Footer = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-muted-foreground">
-              © {currentYear} Budget Gamers Gear. All rights reserved.
+              © {currentYear} {Identity.name}. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-primary transition-colors">

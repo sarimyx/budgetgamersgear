@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Headphones, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Identity } from "@/config/identity";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,7 +36,7 @@ const Navbar = () => {
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-ping"></div>
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-                Budget Gamers Gear
+                {Identity.name}
               </span>
             </div>
           </Link>

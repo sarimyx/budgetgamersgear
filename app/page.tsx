@@ -68,7 +68,7 @@ export default function Home() {
           
           <div className="text-center mb-12 relative z-10">
             <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-white to-primary bg-clip-text text-transparent">
-              Why Trust Budget Gamers Gear?
+              Why Trust Us?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Our team consists of real gamers dedicated to helping you get the most value for your money. No paid hype, just honest, hands-on reviews and recommendations.
